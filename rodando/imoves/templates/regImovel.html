@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="section">
+        <h1> Registro de Novo Imóvel para Aluguel </h1>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="Nome">Nome:</label>
+                <input type="text" id="Nome" placeholder="Jordan Peterson" name="nome">
+                <p></p>
+
+                <label for="CPF">CPF:</label>
+                <input type="text" id="cpf" name="cpf">
+                <p></p>
+
+                <label for="telefone">Telefone:</label>
+                <input type="tel" id="tel" name="telefone">
+                <p></p>
+
+              <label for="formControlEmail">Email:</label>
+              <input type="email" class="form-control" id="formControlEmail" placeholder="name@example.com" name="_email">
+              <p></p>
+
+
+              <label for="VagasSelect">Vagas:</label>
+              <select class="form-control" id="VagasSelect" name="vagas">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+              </select>
+           <p></p>
+
+            <label for="Tipo de Moradia">Tipo de Moradia:</label>
+            <select class="form-control" id="tipoMoradia" name="_type">
+              <option>Apartamento</option>
+              <option>República</option>
+              <option>Casa</option>
+            </select>
+          <p></p>
+
+              <label for="Street">Rua: </label> <t></t>
+              <input type="text" cols="20" rows="1" name="rua" placeholder="Avenida Borges de Medeiros" >
+
+            <p></p>
+
+              <label for="Cep">Cep: </label> <t></t>
+              <input type="text" id="Cep" rows="1" style="resize:none;" name="cep" placeholder="xxxxx-xxx">
+
+            <p></p>
+              <label for="Number">Número:</label> <t></t>
+             <input type="text" rows="1" style="resize:none" name="num" placeholder="00">
+
+            <p></p>
+
+              <label for="apt">Apartamento:</label> <t></t>
+              <input type="text" id="apt" rows="1" cols="5" style="resize:none;" name="apt" placeholder="1001">
+
+            <p></p>
+
+              <label for="descricao">Descrição do Imóvel:</label> <p></p>
+              <textarea rows="4" cols="50" name="descricao" placeholder="Apartamento muito legal"></textarea><p></p>
+            <input type="submit" value="Confirmar">
+            </div>
+        </form>
+    </div>
+{% endblock %}
