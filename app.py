@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 from flask_googlemaps import GoogleMaps, Map
 from home import Home
-from flask_sqlalchemy import SQLAlchemy
 from flask import request, redirect
 import database
 import googlemaps
@@ -33,31 +32,70 @@ def gen_markers(homes):
 
 @app.route("/" ,  methods=['GET', 'POST'])
 def mapview():
+    if request.method == 'POST': ##filtra imoveis disponiveis
+        valor = request.form['valor']
+        raio = request.form['distancia']
 
-    homes = database.get_homes_list()
-    rmarkers = gen_markers(homes)
 
-    mymap = Map(
-        identifier="sndmap",
-        style=(
-            "height:75%;"
-            "width:50%;"
-            "top:100px;"
-            "left:550px;"
-            "position:absolute;"
-            "zIndex:999;"
-        ),
-        lat=-22.978993,
-        lng=-43.233160,
-        markers = rmarkers,
-        zoom="16"
-    )
-    
-    return render_template('map.html', sndmap=mymap)
+        homes = database.get_filtered_home_list(valor, raio)
+        rmarkers = gen_markers(homes)
+
+        circle = {
+            'stroke_color': '#FF00FF',
+            'stroke_opacity': 5.0,
+            'stroke_weight': 7,
+            'fill_color': '#FFFFFF',
+            'fill_opacity': .8,
+            'center': {
+                'lat': -22.978993,
+                'lng': -43.232999
+            },
+            'radius': raio,
+        }
+
+        mymap = Map(
+            identifier="sndmap",
+            style=(
+                "height:75%;"
+                "width:50%;"
+                "top:100px;"
+                "left:550px;"
+                "position:absolute;"
+                "zIndex:999;"
+            ),
+            lat=-22.978993,
+            lng= -43.232999,
+            markers=rmarkers,
+            zoom="16",
+            circles=[circle]
+        )
+
+        return render_template('map.html', sndmap=mymap)
+
+    else:
+        homes = database.get_homes_list()
+        rmarkers = gen_markers(homes)
+
+        mymap = Map(
+            identifier="sndmap",
+            style=(
+                "height:75%;"
+                "width:50%;"
+                "top:100px;"
+                "left:550px;"
+                "position:absolute;"
+                "zIndex:999;"
+            ),
+            lat=-22.978993,
+            lng=-43.233160,
+            markers = rmarkers,
+            zoom="16"
+        )
+        return render_template('map.html', sndmap=mymap)
 
 @app.route("/registrar", methods=['GET', 'POST'])
 def regImoveis():
-    if request.method == 'POST':
+    if request.method == 'POST': ##registra novo ap
         nome = request.form['nome']
         cpf = request.form['cpf']
         tel = request.form['telefone']
@@ -69,6 +107,7 @@ def regImoveis():
         apt = int(request.form['apt'])
         dscp = request.form['descricao']
         tipo = request.form['_type']
+        valor = request.form['valor']
 
         gmaps = googlemaps.Client(key=api_key)
         try:
@@ -80,7 +119,7 @@ def regImoveis():
             print("Unable to get latitude and longitude from address")
             raise (ValueError)
 
-        h = Home(lat, lng, tipo, vagas, dscp, nome, cpf, tel, cep, rua, tipo, num)
+        h = Home(lat, lng, tipo, vagas, dscp, nome, cpf, tel, cep, rua, tipo, num, valor)
         database.insert_data(h)
         return redirect(request.url)
 

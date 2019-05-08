@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="section">
-        <h1> Registro de Novo Imóvel para Aluguel </h1>
+        <h1> Registro de Novo Imóvel</h1>
 
         <form method="POST">
             <div class="form-group">
@@ -63,7 +63,10 @@
               <input type="text" id="apt" rows="1" cols="5" style="resize:none;" name="apt" placeholder="1001">
 
             <p></p>
+                 <label for="valor">Valor aluguel:</label> <t></t>
+                 <input type="text" id="valor" rows="1" cols="5" style="resize:none;" name="valor" placeholder="1000">
 
+            <p></p>
               <label for="descricao">Descrição do Imóvel:</label> <p></p>
               <textarea rows="4" cols="50" name="descricao" placeholder="Apartamento muito legal"></textarea><p></p>
             <input type="submit" value="Confirmar">

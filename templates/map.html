@@ -2,10 +2,26 @@
 
     {%block mapHeader %}
         {{sndmap.js}}
- {% endblock %}
+    {% endblock %}
 
 
- {% block mapContent %}
+
+ {% block content %}
+ <form method="POST">
+     <h2>Encontre sua casa!</h2>
+      <div class="form-group">
+                <label for="Valor">Valor Max:</label>
+                <input type="text" id="valor" placeholder="0" name="valor">
+                <p></p>
+
+                  <label for="Distancia">Distancia da Puc [Km] </label>
+                    <input type="number" id="distancia" min="1" max="200" name="distancia">
+                <p></p>
+           <input type="submit" value="Confirmar">
+      </div>
+
+ </form>
+
  {{sndmap.html}}
  {% endblock %}
 
