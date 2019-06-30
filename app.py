@@ -2,12 +2,13 @@ from flask import Flask, render_template
 from flask_googlemaps import GoogleMaps, Map
 from home import Home
 from flask import request, redirect
-import database
+from database import *
 import googlemaps
 from datetime import datetime
 
 app = Flask(__name__)
 api_key = ''
+dados = DataBase()
 
 with open('.env') as f:
     api_key = f.readline()
@@ -36,27 +37,16 @@ def mapview():
         valor = request.form['valor']
         raio = request.form['distancia']
 
+        homes = dados.get_filtered_home_list(valor, raio)
 
-        homes = database.get_filtered_home_list(valor, raio)
+        print(homes)
         rmarkers = gen_markers(homes)
 
-        circle = {
-            'stroke_color': '#FF00FF',
-            'stroke_opacity': 5.0,
-            'stroke_weight': 7,
-            'fill_color': '#FFFFFF',
-            'fill_opacity': .8,
-            'center': {
-                'lat': -22.978993,
-                'lng': -43.232999
-            },
-            'radius': raio,
-        }
 
         mymap = Map(
             identifier="sndmap",
             style=(
-                "height:75%;"
+                "height:55%;"
                 "width:50%;"
                 "top:100px;"
                 "left:550px;"
@@ -67,13 +57,12 @@ def mapview():
             lng= -43.232999,
             markers=rmarkers,
             zoom="16",
-            circles=[circle]
         )
 
         return render_template('map.html', sndmap=mymap)
 
     else:
-        homes = database.get_homes_list()
+        homes = dados.get_homes_list()
         rmarkers = gen_markers(homes)
 
         mymap = Map(
@@ -120,13 +109,13 @@ def regImoveis():
             raise (ValueError)
 
         h = Home(lat, lng, tipo, vagas, dscp, nome, cpf, tel, cep, rua, tipo, num, valor)
-        database.insert_data(h)
+        dados.insert_data(h)
         return redirect(request.url)
 
     else:
         return render_template('regImovel.html')
 
-
+7
 if __name__ == "__main__":
     app.run(debug=False )
 
