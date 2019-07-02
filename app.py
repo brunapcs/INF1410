@@ -22,7 +22,7 @@ def gen_markers(homes):
     dft = [999, "http://maps.google.com/mapfiles/ms/icons/green-dot.png"]
 
     atts = []
-    for  i in range(0, len(homes)):
+    for i in range(0, len(homes)):
         atts.append(homes[i].get_atts() + dft)
     
     mmarkers = []
@@ -31,17 +31,43 @@ def gen_markers(homes):
     
     return mmarkers
 
+def gen_circles(raio):
+     circle = {
+        'stroke_color': '#FF0000',
+        'stroke_opacity': .5,
+        'stroke_weight': 10,
+        # line(stroke) style
+        'fill_color': '#FF0000',
+        'fill_opacity': .2,
+        # fill style
+        'center': {  # set circle to user_location
+            'lat':-22.978993,
+            'lng':-43.232999
+        },
+        'radius': raio*100  # meters
+     }
+
 @app.route("/" ,  methods=['GET', 'POST'])
 def mapview():
     if request.method == 'POST': ##filtra imoveis disponiveis
         valor = request.form['valor']
         raio = request.form['distancia']
+        tipos = ["Apartamento", "República"]
 
-        homes = dados.get_filtered_home_list(valor, raio)
+        try:
+            tipo_apartamento = request.form['apartamento']
+        except:
+            tipos.remove("Apartamento")
+        try:
+            tipo_republica = request.form['republica']
+        except:
+            tipos.remove("República")
+
+        homes = dados.get_filtered_home_list(valor, raio, tipos)
 
         print(homes)
         rmarkers = gen_markers(homes)
-
+        circle = gen_circles(raio)
 
         mymap = Map(
             identifier="sndmap",
@@ -57,6 +83,8 @@ def mapview():
             lng= -43.232999,
             markers=rmarkers,
             zoom="16",
+            circles=[circle,  [-22.978995,-43.232994, int(raio)*1000],
+            (33.685, -116.251, 1500)],
         )
 
         return render_template('map.html', sndmap=mymap)
@@ -101,14 +129,13 @@ def regImoveis():
         gmaps = googlemaps.Client(key=api_key)
         try:
             geocode_result = gmaps.geocode(str(num) + ' ' + rua + ', Rio de Janeiro, ' + 'RJ')
-            # print(geocode_result[0]['geometry']['location'])
             lat = float(geocode_result[0]['geometry']['location']['lat'])
             lng = float(geocode_result[0]['geometry']['location']['lng'])
         except:
             print("Unable to get latitude and longitude from address")
             raise (ValueError)
 
-        h = Home(lat, lng, tipo, vagas, dscp, nome, cpf, tel, cep, rua, tipo, num, valor)
+        h = Home(lat, lng, tipo, vagas, dscp, nome, cpf, tel, cep, rua, tipo, num, valor, apt)
         dados.insert_data(h)
         return redirect(request.url)
 

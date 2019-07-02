@@ -2,7 +2,7 @@
 
 class Home:
     def __init__(self, latitude, longitude, _type,
-     vagas, description, nome_dono, cpf_dono, telefone, cep, rua, tipo, numero ,valor, apt=0 ):
+     vagas, description, nome_dono, cpf_dono, telefone, cep, rua, tipo, numero , apt, valor ):
         self.lat = latitude
         self.lng = longitude
         self._type = _type
@@ -23,6 +23,9 @@ class Home:
         return self.vagas
 
     def get_atts(self):
-        full_description = "<b>" + self.description + "</b><p></p>" + "Tipo: " + self._type + "<p></p>" + "Vagas: " + str(self.vagas) + "<p></p>" +  "Valor: " + str(self.valor)
+        full_description = "<b>" + self.description + "</b><p></p>" + "Tipo: " + self._type + "<p></p>" + "Vagas: " + str(self.vagas) + "<p></p>" +  "Valor: "
+        full_description += str(self.valor) +"</b><p></p>"+  "Contato: " + self.telefone
+
+
         lst = [self.lat, self.lng, full_description]
         return lst
