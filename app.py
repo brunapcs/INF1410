@@ -64,6 +64,10 @@ def mapview():
             tipos.remove("República")
 
         homes = dados.get_filtered_home_list(valor, raio, tipos)
+        lst = []
+        for i in range(len(homes)-1):
+            data = {'nome' : homes[i].nome_dono}
+            lst.append(data)
 
         print(homes)
         rmarkers = gen_markers(homes)
@@ -87,7 +91,9 @@ def mapview():
             (33.685, -116.251, 1500)],
         )
 
-        return render_template('map.html', sndmap=mymap)
+
+
+        return render_template('map.html', sndmap=mymap,  proprietarios = lst)
 
     else:
         homes = dados.get_homes_list()
@@ -108,7 +114,7 @@ def mapview():
             markers = rmarkers,
             zoom="16"
         )
-        return render_template('map.html', sndmap=mymap)
+        return render_template('map.html', sndmap=mymap )
 
 @app.route("/registrar", methods=['GET', 'POST'])
 def regImoveis():

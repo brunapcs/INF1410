@@ -3,6 +3,7 @@ import sqlite3
 from home import Home
 from flask_sqlalchemy import SQLAlchemy
 import math
+from geopy import distance
 
 class DataBase:
     def __init__(self):
@@ -35,7 +36,6 @@ class DataBase:
 
 
     def filtra_valor(self, val):
-        val = str(val)
         rem = []
 
         for i in range(len(self.home_lst) ):
@@ -47,16 +47,15 @@ class DataBase:
 
 
     def calcula_distancia(self, long_x, lat_y):
-        puc_x = -22.978993
-        puc_y = -43.232999
-        d = math.sqrt(math.pow((long_x - puc_x), 2) + math.pow((lat_y - puc_y), 2))
-        return d
+        puc = ( -22.978993, -43.232999)
+        place = (lat_y, long_x)
+        return float(distance.vincenty(puc, place).km)
 
     def filtra_distancia(self, dist):
         dist = float(dist)
         rem = []
 
-        for i in range(len(self.home_lst)-1):
+        for i in range(len(self.home_lst)):
             distancia = self.calcula_distancia(self.home_lst[i].lng, self.home_lst[i].lat)
             if distancia > dist:
                 rem.append(self.home_lst[i])
@@ -67,25 +66,27 @@ class DataBase:
     def filtra_tipo(self, tipo):
         rem = []
 
-        for i in range(len(tipo)-1):
-            for j in range(len(self.home_lst)-1):
-                if self.home_lst[j]._type[i] != tipo:
+        for i in range(len(tipo)):
+            for j in range(len(self.home_lst)):
+                if self.home_lst[j]._type[i] == tipo:
+                    if self.home_lst[i]._type[i] in rem:
+                        rem.remove(self.home_lst[i])
+                else:
                     rem.append(self.home_lst[i])
 
         for i in range(len(rem)):
-            self.home_lst.remove(rem[i])
+            if rem[i] in self.home_lst:
+              self.home_lst.remove(rem[i])
 
 
 
     def get_filtered_home_list(self, val, dist, tipo):
-        self.connect_database()
         self.home_lst = self.get_homes_list()
 
 
         self.filtra_valor(val)
-        self.filtra_distancia(dist*1000)
+        self.filtra_distancia(float(dist))
         self.filtra_tipo(tipo)
-
 
         return self.home_lst
 
