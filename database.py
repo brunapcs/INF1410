@@ -51,6 +51,11 @@ class DataBase:
         place = (lat_y, long_x)
         return float(distance.vincenty(puc, place).km)
 
+    def calcula_distancia2(self, long_x, lat_y, x , y ):
+        place = (lat_y, long_x)
+        trab = (y , x )
+        return float(distance.vincenty(place, trab).km)
+
     def filtra_distancia(self, dist):
         dist = float(dist)
         rem = []
@@ -58,6 +63,18 @@ class DataBase:
         for i in range(len(self.home_lst)):
             distancia = self.calcula_distancia(self.home_lst[i].lng, self.home_lst[i].lat)
             if distancia > dist:
+                rem.append(self.home_lst[i])
+
+        for i in range(len(rem)):
+            self.home_lst.remove(rem[i])
+
+
+    def filtra_distancia_trab(self,  lat, lng ):
+        rem = []
+
+        for i in range(len(self.home_lst)):
+            distancia = self.calcula_distancia2(self.home_lst[i].lng, self.home_lst[i].lat, lng, lat)
+            if distancia > 15:
                 rem.append(self.home_lst[i])
 
         for i in range(len(rem)):
@@ -82,11 +99,17 @@ class DataBase:
 
     def get_filtered_home_list(self, val, dist, tipo):
         self.home_lst = self.get_homes_list()
-
-
         self.filtra_valor(val)
         self.filtra_distancia(float(dist))
         self.filtra_tipo(tipo)
+
+        return self.home_lst
+
+    def get_rec_homes_list(self, lat,lng, genero, din):
+        self.home_lst = self.get_homes_list()
+        self.filtra_valor(float(din)*0.6)
+        self.filtra_distancia_trab(float(lat), float(lng))
+        ##self.filtra_genero(genero)
 
         return self.home_lst
 

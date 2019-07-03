@@ -47,6 +47,17 @@ def gen_circles(raio):
         'radius': raio*100  # meters
      }
 
+def getCoordinates(rua , num):
+    gmaps = googlemaps.Client(key=api_key)
+    try:
+        geocode_result = gmaps.geocode(str(num) + ' ' + rua + ', Rio de Janeiro, ' + 'RJ')
+        lat = float(geocode_result[0]['geometry']['location']['lat'])
+        lng = float(geocode_result[0]['geometry']['location']['lng'])
+    except:
+        print("Unable to get latitude and longitude from address")
+        raise (ValueError)
+    return lat, lng
+
 @app.route("/" ,  methods=['GET', 'POST'])
 def mapview():
     if request.method == 'POST': ##filtra imoveis disponiveis
@@ -76,10 +87,10 @@ def mapview():
         mymap = Map(
             identifier="sndmap",
             style=(
-                "height:55%;"
-                "width:50%;"
+                "height:83%;"
+                "width:57%;"
                 "top:100px;"
-                "left:550px;"
+                "left:35%;"
                 "position:absolute;"
                 "zIndex:999;"
             ),
@@ -91,8 +102,6 @@ def mapview():
             (33.685, -116.251, 1500)],
         )
 
-
-
         return render_template('map.html', sndmap=mymap,  proprietarios = lst)
 
     else:
@@ -102,10 +111,10 @@ def mapview():
         mymap = Map(
             identifier="sndmap",
             style=(
-                "height:75%;"
-                "width:50%;"
+                "height:83%;"
+                "width:57%;"
                 "top:100px;"
-                "left:550px;"
+                "left:35%;"
                 "position:absolute;"
                 "zIndex:999;"
             ),
@@ -132,14 +141,8 @@ def regImoveis():
         tipo = request.form['_type']
         valor = request.form['valor']
 
-        gmaps = googlemaps.Client(key=api_key)
-        try:
-            geocode_result = gmaps.geocode(str(num) + ' ' + rua + ', Rio de Janeiro, ' + 'RJ')
-            lat = float(geocode_result[0]['geometry']['location']['lat'])
-            lng = float(geocode_result[0]['geometry']['location']['lng'])
-        except:
-            print("Unable to get latitude and longitude from address")
-            raise (ValueError)
+        lat , lng = getCoordinates(rua, num)
+
 
         h = Home(lat, lng, tipo, vagas, dscp, nome, cpf, tel, cep, rua, tipo, num, valor, apt)
         dados.insert_data(h)
@@ -148,7 +151,59 @@ def regImoveis():
     else:
         return render_template('regImovel.html')
 
-7
+
+
+@app.route("/recomendacoes", methods=['GET', 'POST'])
+def recomendacoes():
+    if request.method == 'POST':
+        genero = (request.form['genero'])
+        rua = request.form['rua']
+        num = int(request.form['numero'])
+        din = int(request.form['dinheiro'])
+        lat,lng = getCoordinates(rua, num)
+
+        homes = dados.get_rec_homes_list(lat,lng, genero, din)
+        rmarkers = gen_markers(homes)
+
+        mymap = Map(
+            identifier="sndmap",
+            style=(
+                "height:75%;"
+                "width:75%;"
+                "top:500px;"
+                "left:12%;"
+                "position:absolute;"
+                "zIndex:999;"
+            ),
+            lat=-22.978993,
+            lng=-43.233160,
+            markers=rmarkers,
+            zoom="16"
+        )
+        return render_template('recomendacoes.html', sndmap=mymap)
+
+    else:
+        homes = dados.get_homes_list()
+        rmarkers = gen_markers(homes)
+
+        mymap = Map(
+            identifier="sndmap",
+            style=(
+                "height:75%;"
+                "width:75%;"
+                "top:500px;"
+                "left:12%;"
+                "position:absolute;"
+                "zIndex:999;"
+            ),
+            lat=-22.978993,
+            lng=-43.233160,
+            markers=rmarkers,
+            zoom="16"
+        )
+    return render_template('recomendacoes.html', sndmap=mymap)
+
+
 if __name__ == "__main__":
     app.run(debug=False )
 
