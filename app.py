@@ -204,6 +204,28 @@ def recomendacoes():
     return render_template('recomendacoes.html', sndmap=mymap)
 
 
+@app.route("/grande", methods=['GET', 'POST'])
+def grande():
+    homes = dados.get_homes_list()
+    rmarkers = gen_markers(homes)
+
+    mymap = Map(
+        identifier="sndmap",
+        style=(
+            "height:140%;"
+            "width:83%;"
+            "top:100px;"
+            "left:8%;"
+            "position:absolute;"
+            "zIndex:999;"
+        ),
+        lat=-22.978993,
+        lng=-43.233160,
+        markers=rmarkers,
+        zoom="16"
+    )
+    return render_template('grande.html', sndmap=mymap)
+
 if __name__ == "__main__":
     app.run(debug=False )
 
